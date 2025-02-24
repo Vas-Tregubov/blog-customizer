@@ -3,7 +3,6 @@ import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
-import { useState } from 'react';
 import {
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -11,6 +10,7 @@ import {
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
+	ArticleStateType,
 } from 'src/constants/articleProps';
 import clsx from 'clsx';
 
@@ -19,46 +19,37 @@ import styles from './ArticleParamsForm.module.scss';
 type ArticleParamsFormProps = {
 	isOpen: boolean;
 	onToggle: () => void;
+	articleState: ArticleStateType;
+	onChange: <K extends keyof ArticleStateType>(
+		key: K,
+		value: ArticleStateType[K]
+	) => void;
 };
 
 export const ArticleParamsForm = ({
 	isOpen,
 	onToggle,
+	articleState,
+	onChange,
 }: ArticleParamsFormProps) => {
-	const [selectedFontFamily, setSelectedFontFamily] = useState<OptionType>(
-		fontFamilyOptions[0]
-	);
-	const [selectedFontSize, setSelectedFontSize] = useState<OptionType>(
-		fontSizeOptions[0]
-	);
-	const [selectedFontColor, setSelectedFontColor] = useState<OptionType>(
-		fontColors[0]
-	);
-
-	const [selectedBackgroundColor, setSelectedBackgroundColor] =
-		useState<OptionType>(backgroundColors[0]);
-
-	const [selectedContentWidthArr, setSelectedContentWidthArr] =
-		useState<OptionType>(contentWidthArr[0]);
-
 	const handleFontFamilyChange = (option: OptionType) => {
-		setSelectedFontFamily(option);
+		onChange('fontFamilyOption', option);
 	};
 
 	const handleFontSizeChange = (option: OptionType) => {
-		setSelectedFontSize(option);
+		onChange('fontSizeOption', option);
 	};
 
 	const handleFontColorChange = (option: OptionType) => {
-		setSelectedFontColor(option);
+		onChange('fontColor', option);
 	};
 
 	const handleBackgroundColorChange = (option: OptionType) => {
-		setSelectedBackgroundColor(option);
+		onChange('backgroundColor', option);
 	};
 
 	const handleContentWidthArrChange = (option: OptionType) => {
-		setSelectedContentWidthArr(option);
+		onChange('contentWidth', option);
 	};
 
 	return (
@@ -70,34 +61,33 @@ export const ArticleParamsForm = ({
 					<Select
 						title='Шрифт'
 						options={fontFamilyOptions}
-						selected={selectedFontFamily}
+						selected={articleState.fontFamilyOption}
 						onChange={handleFontFamilyChange}
 					/>
 					<RadioGroup
 						name='fontSize'
 						title='Размер шрифта'
 						options={fontSizeOptions}
-						selected={selectedFontSize}
+						selected={articleState.fontSizeOption}
 						onChange={handleFontSizeChange}
 					/>
-
 					<Select
 						title='Цвет шрифта'
 						options={fontColors}
-						selected={selectedFontColor}
+						selected={articleState.fontColor}
 						onChange={handleFontColorChange}
 					/>
 					<Separator />
 					<Select
 						title='Цвет фона'
 						options={backgroundColors}
-						selected={selectedBackgroundColor}
+						selected={articleState.backgroundColor}
 						onChange={handleBackgroundColorChange}
 					/>
 					<Select
 						title='Ширина контента'
 						options={contentWidthArr}
-						selected={selectedContentWidthArr}
+						selected={articleState.contentWidth}
 						onChange={handleContentWidthArrChange}
 					/>
 					<div className={styles.bottomContainer}>
