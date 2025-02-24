@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { StrictMode, CSSProperties, useState } from 'react';
+import { StrictMode, CSSProperties, useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
@@ -23,6 +23,30 @@ const App = () => {
 	const [articleState, setArticleState] =
 		useState<ArticleStateType>(defaultArticleState);
 
+	const [tempArticleState, setTempArticleState] =
+		useState<ArticleStateType>(defaultArticleState);
+
+	const sidebarRef = useRef<HTMLElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				sidebarRef.current &&
+				!sidebarRef.current.contains(e.target as Node)
+			) {
+				if (isOpen.sidebar) {
+					toggleState('sidebar');
+				}
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isOpen]);
+
 	const toggleState = (key: string) => {
 		setIsOpen((prevState) => ({
 			...prevState,
@@ -34,10 +58,18 @@ const App = () => {
 		key: K,
 		value: ArticleStateType[K]
 	) => {
-		setArticleState((prevState) => ({
+		setTempArticleState((prevState) => ({
 			...prevState,
 			[key]: value,
 		}));
+	};
+
+	const handleApplyChanges = () => {
+		setArticleState(tempArticleState);
+	};
+
+	const handleResetChanges = () => {
+		setArticleState(defaultArticleState);
 	};
 
 	return (
@@ -53,9 +85,12 @@ const App = () => {
 				} as CSSProperties
 			}>
 			<ArticleParamsForm
+				ref={sidebarRef}
 				isOpen={isOpen.sidebar}
 				onToggle={() => toggleState('sidebar')}
-				articleState={articleState}
+				articleState={tempArticleState}
+				onApply={handleApplyChanges}
+				onReset={handleResetChanges}
 				onChange={handleArticleParamsChange}
 			/>
 			<Article />

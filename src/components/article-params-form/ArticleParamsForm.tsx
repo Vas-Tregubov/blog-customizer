@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group';
@@ -24,78 +25,105 @@ type ArticleParamsFormProps = {
 		key: K,
 		value: ArticleStateType[K]
 	) => void;
+	onApply: () => void;
+	onReset: () => void;
 };
 
-export const ArticleParamsForm = ({
-	isOpen,
-	onToggle,
-	articleState,
-	onChange,
-}: ArticleParamsFormProps) => {
-	const handleFontFamilyChange = (option: OptionType) => {
-		onChange('fontFamilyOption', option);
-	};
+export const ArticleParamsForm = forwardRef<
+	HTMLElement,
+	ArticleParamsFormProps
+>(
+	(
+		{
+			isOpen,
+			onToggle,
+			articleState,
+			onChange,
+			onApply,
+			onReset,
+		}: ArticleParamsFormProps,
+		ref
+	) => {
+		const handleFontFamilyChange = (option: OptionType) => {
+			onChange('fontFamilyOption', option);
+		};
 
-	const handleFontSizeChange = (option: OptionType) => {
-		onChange('fontSizeOption', option);
-	};
+		const handleFontSizeChange = (option: OptionType) => {
+			onChange('fontSizeOption', option);
+		};
 
-	const handleFontColorChange = (option: OptionType) => {
-		onChange('fontColor', option);
-	};
+		const handleFontColorChange = (option: OptionType) => {
+			onChange('fontColor', option);
+		};
 
-	const handleBackgroundColorChange = (option: OptionType) => {
-		onChange('backgroundColor', option);
-	};
+		const handleBackgroundColorChange = (option: OptionType) => {
+			onChange('backgroundColor', option);
+		};
 
-	const handleContentWidthArrChange = (option: OptionType) => {
-		onChange('contentWidth', option);
-	};
+		const handleContentWidthArrChange = (option: OptionType) => {
+			onChange('contentWidth', option);
+		};
 
-	return (
-		<>
-			<ArrowButton isOpen={isOpen} onClick={onToggle} />
-			<aside
-				className={clsx(styles.container, { [styles.container_open]: isOpen })}>
-				<form className={styles.form}>
-					<Select
-						title='Шрифт'
-						options={fontFamilyOptions}
-						selected={articleState.fontFamilyOption}
-						onChange={handleFontFamilyChange}
-					/>
-					<RadioGroup
-						name='fontSize'
-						title='Размер шрифта'
-						options={fontSizeOptions}
-						selected={articleState.fontSizeOption}
-						onChange={handleFontSizeChange}
-					/>
-					<Select
-						title='Цвет шрифта'
-						options={fontColors}
-						selected={articleState.fontColor}
-						onChange={handleFontColorChange}
-					/>
-					<Separator />
-					<Select
-						title='Цвет фона'
-						options={backgroundColors}
-						selected={articleState.backgroundColor}
-						onChange={handleBackgroundColorChange}
-					/>
-					<Select
-						title='Ширина контента'
-						options={contentWidthArr}
-						selected={articleState.contentWidth}
-						onChange={handleContentWidthArrChange}
-					/>
-					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
-						<Button title='Применить' htmlType='submit' type='apply' />
-					</div>
-				</form>
-			</aside>
-		</>
-	);
-};
+		return (
+			<>
+				<ArrowButton isOpen={isOpen} onClick={onToggle} />
+				<aside
+					ref={ref}
+					className={clsx(styles.container, {
+						[styles.container_open]: isOpen,
+					})}>
+					<form className={styles.form}>
+						<Select
+							title='Шрифт'
+							options={fontFamilyOptions}
+							selected={articleState.fontFamilyOption}
+							onChange={handleFontFamilyChange}
+						/>
+						<RadioGroup
+							name='fontSize'
+							title='Размер шрифта'
+							options={fontSizeOptions}
+							selected={articleState.fontSizeOption}
+							onChange={handleFontSizeChange}
+						/>
+						<Select
+							title='Цвет шрифта'
+							options={fontColors}
+							selected={articleState.fontColor}
+							onChange={handleFontColorChange}
+						/>
+						<Separator />
+						<Select
+							title='Цвет фона'
+							options={backgroundColors}
+							selected={articleState.backgroundColor}
+							onChange={handleBackgroundColorChange}
+						/>
+						<Select
+							title='Ширина контента'
+							options={contentWidthArr}
+							selected={articleState.contentWidth}
+							onChange={handleContentWidthArrChange}
+						/>
+						<div className={styles.bottomContainer}>
+							<Button
+								title='Сбросить'
+								htmlType='reset'
+								type='clear'
+								onClick={onReset}
+							/>
+							<Button
+								title='Применить'
+								htmlType='button'
+								type='apply'
+								onClick={onApply}
+							/>
+						</div>
+					</form>
+				</aside>
+			</>
+		);
+	}
+);
+
+ArticleParamsForm.displayName = 'ArticleParamsForm';

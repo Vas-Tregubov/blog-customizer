@@ -25,12 +25,6 @@ export const Option = (props: OptionProps) => {
 
 	const inputId = `${groupName}_radio_item_with_value__${value}`;
 	const isChecked = value === selected.title;
-	console.log('Option рендерится с props:', {
-		groupName,
-		value,
-		title,
-		selected,
-	});
 
 	return (
 		<div
