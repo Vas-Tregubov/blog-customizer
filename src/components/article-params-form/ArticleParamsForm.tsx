@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, FormEvent } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 import {
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -35,22 +36,12 @@ export const ArticleParamsForm = ({
 		setIsOpen((prev) => !prev);
 	};
 
-	useEffect(() => {
-		if (!isOpen) return;
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				sidebarRef.current &&
-				!sidebarRef.current.contains(event.target as Node)
-			) {
-				setIsOpen(false);
-			}
-		};
+	useOutsideClickClose({
+		isOpen,
+		onChange: setIsOpen,
+		rootRef: sidebarRef as React.RefObject<HTMLDivElement>,
+	});
 
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [isOpen]);
 	const handleArticleParamsChange = <K extends keyof ArticleStateType>(
 		key: K,
 		value: ArticleStateType[K]
