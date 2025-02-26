@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, FormEvent } from 'react';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group';
@@ -18,15 +18,16 @@ import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
-	onApply: (state: ArticleStateType) => void;
+	formState: ArticleStateType;
+	setFormState: React.Dispatch<React.SetStateAction<ArticleStateType>>;
 };
 
-export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
-	const [articleState, setArticleState] =
-		useState<ArticleStateType>(defaultArticleState);
-
+export const ArticleParamsForm = ({
+	formState,
+	setFormState,
+}: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
-
+	const [localFormState, setLocalFormState] = useState(formState);
 	const sidebarRef = useRef<HTMLElement | null>(null);
 
 	const toggleSidebar = () => {
@@ -34,6 +35,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	};
 
 	useEffect(() => {
+		if (!isOpen) return;
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				sidebarRef.current &&
@@ -47,25 +49,23 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, []);
-
+	}, [isOpen]);
 	const handleArticleParamsChange = <K extends keyof ArticleStateType>(
 		key: K,
 		value: ArticleStateType[K]
 	) => {
-		setArticleState((prevState) => ({
+		setLocalFormState((prevState) => ({
 			...prevState,
 			[key]: value,
 		}));
 	};
-
 	const handleResetChanges = () => {
-		setArticleState(defaultArticleState);
-		onApply(defaultArticleState);
+		setLocalFormState(defaultArticleState);
+		setFormState(defaultArticleState);
 	};
-
-	const handleApply = () => {
-		onApply(articleState);
+	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		setFormState(localFormState);
 	};
 
 	return (
@@ -76,11 +76,15 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 				className={clsx(styles.container, {
 					[styles.container_open]: isOpen,
 				})}>
-				<form className={styles.form}>
+				<form
+					className={styles.form}
+					onSubmit={handleSubmit}
+					onReset={handleResetChanges}>
+					<h2 className={styles.title}>Задайте параметры</h2>
 					<Select
 						title='Шрифт'
 						options={fontFamilyOptions}
-						selected={articleState.fontFamilyOption}
+						selected={localFormState.fontFamilyOption}
 						onChange={(option) =>
 							handleArticleParamsChange('fontFamilyOption', option)
 						}
@@ -89,7 +93,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 						name='fontSize'
 						title='Размер шрифта'
 						options={fontSizeOptions}
-						selected={articleState.fontSizeOption}
+						selected={localFormState.fontSizeOption}
 						onChange={(option) =>
 							handleArticleParamsChange('fontSizeOption', option)
 						}
@@ -97,7 +101,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 					<Select
 						title='Цвет шрифта'
 						options={fontColors}
-						selected={articleState.fontColor}
+						selected={localFormState.fontColor}
 						onChange={(option) =>
 							handleArticleParamsChange('fontColor', option)
 						}
@@ -106,7 +110,7 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 					<Select
 						title='Цвет фона'
 						options={backgroundColors}
-						selected={articleState.backgroundColor}
+						selected={localFormState.backgroundColor}
 						onChange={(option) =>
 							handleArticleParamsChange('backgroundColor', option)
 						}
@@ -114,24 +118,14 @@ export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 					<Select
 						title='Ширина контента'
 						options={contentWidthArr}
-						selected={articleState.contentWidth}
+						selected={localFormState.contentWidth}
 						onChange={(option) =>
 							handleArticleParamsChange('contentWidth', option)
 						}
 					/>
 					<div className={styles.bottomContainer}>
-						<Button
-							title='Сбросить'
-							htmlType='reset'
-							type='clear'
-							onClick={handleResetChanges}
-						/>
-						<Button
-							title='Применить'
-							htmlType='button'
-							type='apply'
-							onClick={handleApply}
-						/>
+						<Button title='Сбросить' htmlType='reset' type='clear' />
+						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
 			</aside>
