@@ -4,6 +4,7 @@ import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
+import { Text } from 'src/ui/text';
 import {
 	fontFamilyOptions,
 	fontSizeOptions,
@@ -80,7 +81,9 @@ export const ArticleParamsForm = ({
 					className={styles.form}
 					onSubmit={handleSubmit}
 					onReset={handleResetChanges}>
-					<h2 className={styles.title}>Задайте параметры</h2>
+					<Text as='h2' size={31} weight={800} uppercase>
+						Задайте параметры
+					</Text>
 					<Select
 						title='Шрифт'
 						options={fontFamilyOptions}
